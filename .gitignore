@@ -75,3 +75,11 @@ crashlytics-build.properties
 *.meta
 *.meta
 *.ini
+*.meta
+*.meta
+*.ini
+*.ini
+*.ini
+/Assets/polygonTrees
+/Assets/Polytope Studio
+/Assets/polygonTrees
