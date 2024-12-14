@@ -83,3 +83,4 @@ crashlytics-build.properties
 /Assets/polygonTrees
 /Assets/Polytope Studio
 /Assets/polygonTrees
+!/Assets/Scripts/
