@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using Backend;
+using Backend.Animals;
+using Utils;
 
 public class TimeController : MonoBehaviour
 {
@@ -16,6 +19,11 @@ public class TimeController : MonoBehaviour
 
 
     private DayOfWeek[] simulationDays;
+
+    private Simulation simulation;
+
+
+        AnimalSpawner animalSpawner;
 
     // Enum com todas as velocidades possíveis de tempo
     private enum Speed
@@ -47,6 +55,11 @@ public class TimeController : MonoBehaviour
             timeSlider.maxValue = 100f;  // Progresso do dia de 0 a 100 dias
         }
 
+        simulation = new Simulation(100, 10, new Backend.Animals.Animal1());
+
+        animalSpawner = new AnimalSpawner(new Backend.Animals.Animal1(), 100, new Vector3(0, 0, 0), new Vector3(1000, 1000, 10));
+        animalSpawner.SpawnAnimals();
+
         UpdateTimeText();
         UpdateSpeedText();
     }
@@ -63,7 +76,8 @@ public class TimeController : MonoBehaviour
             if (currentDayProgress >= 1f)
             {
                 currentDayProgress = 0f;
-                currentDay++;
+                // currentDay++;
+                advanceDay();
             }
 
             // Atualiza o slider
@@ -116,13 +130,18 @@ public class TimeController : MonoBehaviour
     {
         // Alterna entre Pause e x1
         currentSpeed = currentSpeed == Speed.Pause ? Speed.x1 : Speed.Pause;
+
+        toggleButtonText.SetText(currentSpeed == Speed.Pause ? "Play" : "Stop");
+
         UpdateSpeedText();
     }
 
     // Função para avançar um dia
 
     private void advanceDay(){
+        UnityEngine.Debug.Log("On this these day there were "+simulation.getNumOfAnimals() + "animals!");
         currentDay++;
+        simulation.nextDay();
     }
 
     

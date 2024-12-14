@@ -28,19 +28,23 @@ namespace Backend
             {
                 population.Add(new Individuo(specie));
             }
-            for (int i = 0; i < nrCycles; i++)
-            {
-                if (population.Count == 0)
-                {
-                    Console.WriteLine("Morreram todos");
-                    break;
-                }
-                nextCycle(new Day());
-            }
+
+            // for (int i = 0; i < nrCycles; i++)
+            // {
+            //     if (population.Count == 0)
+            //     {
+            //         Console.WriteLine("Morreram todos");
+            //         break;
+            //     }
+            //     nextCycle(new Day());
+            // }
+
             foreach (Individuo individuo in population)
             {
                 Console.WriteLine(individuo);
             }
+
+
             UnityEngine.Debug.Log("Was constructed!");        }
 
         private void nextCycle(Day day)
@@ -87,8 +91,12 @@ namespace Backend
 
 
 
-        public void advanceDay(){
+        public void nextDay(){
             nextCycle(new Day());
+        }
+
+        public int getNumOfAnimals(){
+            return population.Count;
         }
     }
 }

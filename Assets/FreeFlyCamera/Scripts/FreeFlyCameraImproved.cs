@@ -106,31 +106,42 @@ public class FreeFlyCameraImproved : MonoBehaviour
 
     // Apply requested cursor state
     private void SetCursorState()
+{
+    // Verifica se o ponteiro do mouse está sobre um elemento da UI
+    if (EventSystem.current.IsPointerOverGameObject())
     {
-        // Verifica se o ponteiro do mouse está sobre um elemento da UI
-        if (EventSystem.current.IsPointerOverGameObject())
+        Cursor.lockState = CursorLockMode.None;  // Desbloqueia o cursor
+        Cursor.visible = true;  // Torna o cursor visível
+    }
+    else
+    {
+        // Caso contrário, trava o cursor para movimento da câmera
+        if (Input.GetMouseButtonDown(0))  // Apenas ao clicar com o botão esquerdo, trava o cursor
         {
-            Cursor.lockState = CursorLockMode.None;  // Desbloqueia o cursor
-            Cursor.visible = true;  // Torna o cursor visível
+            _wantedMode = CursorLockMode.Locked;
+        }
+        Cursor.lockState = _wantedMode;
+        Cursor.visible = (CursorLockMode.Locked != _wantedMode);
+    }
+
+    // Desbloqueia o cursor quando pressionado ESC
+    if (Input.GetKeyDown(KeyCode.Escape))
+    {
+        if (Cursor.lockState == CursorLockMode.None)
+        {
+            // Se já estiver desbloqueado, apenas volta ao modo normal de voo
+            _wantedMode = CursorLockMode.Locked;
         }
         else
         {
-            // Caso contrário, trava o cursor para movimento da câmera
-            if (Input.GetMouseButtonDown(0))  // Apenas ao clicar com o botão esquerdo, trava o cursor
-            {
-                _wantedMode = CursorLockMode.Locked;
-            }
-            Cursor.lockState = _wantedMode;
-            Cursor.visible = (CursorLockMode.Locked != _wantedMode);
+            // Caso contrário, libera o cursor
+            _wantedMode = CursorLockMode.None;
         }
-
-        // Desbloqueia o cursor quando pressionado ESC
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Cursor.lockState = _wantedMode = CursorLockMode.None;
-            Cursor.visible = true;
-        }
+        Cursor.lockState = _wantedMode;
+        Cursor.visible = (CursorLockMode.Locked != _wantedMode);
     }
+}
+
 
     private void CalculateCurrentIncrease(bool moving)
     {
