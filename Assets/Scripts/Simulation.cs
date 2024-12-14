@@ -1,21 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using SomeSpace;
-
-namespace HelloWorld
+using UnityEngine;
+using Random = System.Random;
+namespace Backend
 {
+
+
     internal class Program
     {
         private static void Main(string[] args)
         {
-            new Simulation(100, 10, new Animal1());
+            // new Simulation(100, 10, new Animais.Animal1());
+            Console.WriteLine("Running");
         }
     }
 
-    class Simulation
+    public class Simulation
     {
         public static readonly Random random = new Random();
-        readonly List<Individuo> population = new List<Individuo>();
+        readonly List<Backend.Individuo> population = new List<Individuo>();
         readonly Specie specie;
         public Simulation(int nrCycles, int popInit, Specie specie)
         {
@@ -37,12 +41,12 @@ namespace HelloWorld
             {
                 Console.WriteLine(individuo);
             }
-        }
+            UnityEngine.Debug.Log("Was constructed!");        }
 
         private void nextCycle(Day day)
         {
             Console.WriteLine("Dia: " + day.nrDay + " temperatura: " + day.temperature);
-            Console.WriteLine("NR POPULAÇÃO " + population.Count);
+            UnityEngine.Debug.Log("NR POPULAÇÃO " + population.Count);
             List<Individuo> mortos = new List<Individuo>();
             List<Individuo> novos = new List<Individuo>();
 
@@ -82,5 +86,9 @@ namespace HelloWorld
         }
 
 
+
+        public void advanceDay(){
+            nextCycle(new Day());
+        }
     }
 }

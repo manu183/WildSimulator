@@ -1,5 +1,6 @@
-namespace SomeSpace
+namespace Backend
 {
+    using System;
     public abstract class Specie
     {
         protected readonly double temperaturaIdeal;
@@ -18,10 +19,11 @@ namespace SomeSpace
 
         public double ProbabilidadeSobreviver(double T, double desvio)
         {
-            double numerador = Math.Pow(T - temperaturaIdeal, 2);
-            double denominador = 2 * Math.Pow(desvio, 2);
-            double resultado = Math.Exp(-numerador / denominador);
+            double numerador = System.Math.Pow(T - temperaturaIdeal, 2);
+            double denominador = 2 * System.Math.Pow(desvio, 2);
+            double resultado = System.Math.Exp(-numerador / denominador);
             return resultado;
         }
     }
+
 }

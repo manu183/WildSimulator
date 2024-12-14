@@ -1,8 +1,8 @@
-
-using HelloWorld;
-
-namespace SomeSpace
+namespace Backend
 {
+    using System;
+
+
     public class Individuo
     {
 
@@ -29,6 +29,7 @@ namespace SomeSpace
                 return true;
             }
             //morrer temperatura
+            Random random = new Random();
             double r = Simulation.random.NextDouble();
             if (r > specie.ProbabilidadeSobreviver(day.temperature, desvioTemperatura))
             {
