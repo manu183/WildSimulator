@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using UnityEngine;
-using Random = System.Random;
-namespace Backend
+﻿namespace Backend
 {
 
+    using System;
+    using System.Collections.Generic;
+    using Random = System.Random;
+    using Backend.Animals;
 
     internal class Program
     {
         private static void Main(string[] args)
         {
-            // new Simulation(100, 10, new Animais.Animal1());
-            Console.WriteLine("Running");
+            new Simulation(100, 10, new Animal1());
         }
     }
 
-    public class Simulation
+    class Simulation
     {
         public static readonly Random random = new Random();
-        readonly List<Backend.Individuo> population = new List<Individuo>();
+        readonly List<Individuo> population = new List<Individuo>();
         readonly Specie specie;
         public Simulation(int nrCycles, int popInit, Specie specie)
         {
@@ -28,7 +26,6 @@ namespace Backend
             {
                 population.Add(new Individuo(specie));
             }
-
             // for (int i = 0; i < nrCycles; i++)
             // {
             //     if (population.Count == 0)
@@ -38,19 +35,16 @@ namespace Backend
             //     }
             //     nextCycle(new Day());
             // }
-
             foreach (Individuo individuo in population)
             {
                 Console.WriteLine(individuo);
             }
-
-
-            UnityEngine.Debug.Log("Was constructed!");        }
+        }
 
         private void nextCycle(Day day)
         {
             Console.WriteLine("Dia: " + day.nrDay + " temperatura: " + day.temperature);
-            UnityEngine.Debug.Log("NR POPULAÇÃO " + population.Count);
+            Console.WriteLine("NR POPULAÇÃO " + population.Count);
             List<Individuo> mortos = new List<Individuo>();
             List<Individuo> novos = new List<Individuo>();
 
@@ -67,7 +61,6 @@ namespace Backend
                 }
                 else
                 {
-                    individuo.age++;
                     int numNovos = individuo.specie.GetNrOfKids();
                     for (int j = 0; j < numNovos; j++)
                     {
@@ -80,23 +73,23 @@ namespace Backend
 
             // Remove os indivíduos mortos após o loop
             Console.WriteLine("Morreram neste dia: " + mortos.Count + " Nasceram: " + novos.Count);
-            foreach (Individuo morto in mortos)
-            {
-                population.Remove(morto);
-            }
+            population.RemoveAll(x => x.died);
 
             // Adiciona os novos indivíduos após o loop
             population.AddRange(novos);
         }
 
-
-
-        public void nextDay(){
+        public void nextDay()
+        {
             nextCycle(new Day());
         }
-
+    
         public int getNumOfAnimals(){
             return population.Count;
         }
     }
+
 }
+
+
+

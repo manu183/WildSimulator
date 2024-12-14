@@ -1,7 +1,7 @@
+using System;
+
 namespace Backend
 {
-    using System;
-
     public static class Distributions
     {
         public static double Normal(double mu, double sigma)

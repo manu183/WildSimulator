@@ -4,7 +4,6 @@ namespace Backend
     using System.Data;
     using System.Runtime.ConstrainedExecution;
 
-
     public class Day
     {
 
@@ -46,7 +45,7 @@ namespace Backend
 
         private double getAvrTemp()
         {
-            DateTime dataInicial = new DateTime(1, 5, 1);
+            DateTime dataInicial = new DateTime(1, 5, 1); //Começa em maio
             DateTime dataFinal = dataInicial.AddDays(nrDay);
             return avrTemp[dataFinal.Month];
         }

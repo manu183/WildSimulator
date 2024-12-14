@@ -1,19 +1,29 @@
 namespace Utils
 {
+    using System.Collections.Generic;
     using Backend;
+    using Backend.Animals;
     using UnityEngine;
 
     public class AnimalSpawner
     {
-        private GameObject animalPrefab;  // O prefab do animal
-        private int numberOfAnimals; // Quantidade de animais para spawnar
+        private List<Object> spawnedAnimals; // Armazenar os animais instanciados
 
-        private Vector3 spawnAreaMin; // Posição mínima da área
-        private Vector3 spawnAreaMax; // Posição máxima da área
-
-        public AnimalSpawner(Specie animal, int numberOfAnimals, Vector3 spawnAreaMin, Vector3 spawnAreaMax)
+        public AnimalSpawner()
         {
-            // Verifica o tipo da espécie e carrega o prefab correspondente
+            spawnedAnimals = new List<Object>();
+        }
+
+
+
+        public void SpawnAnimals(Specie animal, int numberOfAnimals)
+        {
+            if (spawnedAnimals.Count >= 1)
+            {
+                ClearAnimals();
+            }
+
+            GameObject animalPrefab = null;
             if (animal is Backend.Animals.Animal1)
             {
                 GameObject tigerPrefab = Resources.Load<GameObject>("Animals_FREE/Prefabs/Tiger_001");
@@ -35,36 +45,68 @@ namespace Utils
 
             if (animalPrefab == null)
             {
-                // Debug.LogError("Prefab não encontrado para a espécie fornecida!");
+                Debug.LogError("Prefab não encontrado para a espécie fornecida!");
                 return;
             }
 
-            this.numberOfAnimals = numberOfAnimals; // Armazena o número de animais da instância
-            this.spawnAreaMin = spawnAreaMin;
-            this.spawnAreaMax = spawnAreaMax;
-        }
-
-        public void SpawnAnimals()
-        {
             if (animalPrefab == null)
             {
-                Debug.LogError("Nenhum prefab foi carregado, abortando spawn!");
-                return;
+                Debug.LogError("Não carrega o GameObject!");
             }
-
-            for (int i = 0; i < numberOfAnimals; i++)
+            else
             {
-                Vector3 randomPosition = new Vector3(
-                    Random.Range(spawnAreaMin.x, spawnAreaMax.x),
-                    Random.Range(spawnAreaMin.y, spawnAreaMax.y),
-                    100
-                );
 
-                // Instancia o animal no mapa usando UnityEngine.Object.Instantiate
-                Object.Instantiate(animalPrefab, randomPosition, Quaternion.identity);
+                Debug.Log("Carregou o object!");
+
+                Terrain terrain = Terrain.activeTerrain;
+                for (int i = 0; i < numberOfAnimals; i++)
+                {
+                    Vector3 randomPosition = new Vector3(
+                        Random.Range(0, 1000),
+                        0,
+                        Random.Range(0, 1000)
+                    );
+
+                    if (terrain != null)
+                    {
+                        randomPosition.y = terrain.SampleHeight(randomPosition) + terrain.GetPosition().y;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Nenhum terreno encontrado. Os animais serão spawnados na altura fixa de 0.");
+                        randomPosition.y = 0; // Use uma altura fixa se não houver terreno
+                    }
+
+                    // Instancia o animal no mapa usando UnityEngine.Object.Instantiate
+                    Object spawned = Object.Instantiate(animalPrefab, randomPosition, Quaternion.identity); //guardar na lista animalsSpawned
+                    if (spawned == null)
+                    {
+                        Debug.LogError("Não foi spawnadado o object!");
+                    }
+                    else
+                    {
+                        spawnedAnimals.Add(spawned);
+                    }
+                }
 
             }
-            Debug.Log("Animals were spawned!");
+            Debug.Log("There are " + spawnedAnimals.Count + " animals on the field!");
+        }
+
+        private void ClearAnimals()
+        {
+            if (spawnedAnimals != null)
+            {
+                foreach (var animal in spawnedAnimals)
+                {
+                    if (animal != null)
+                    {
+                        Object.Destroy(animal); // Destrói o animal da cena
+                    }
+                }
+            }
+            spawnedAnimals.Clear(); //limpar a lista
+
         }
     }
 }

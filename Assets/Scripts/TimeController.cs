@@ -13,7 +13,9 @@ public class TimeController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI toggleButtonText; // Referência ao texto do botão
     [SerializeField] private TextMeshProUGUI speedText; // Texto para mostrar a velocidade atual
 
-     [SerializeField] private TextMeshProUGUI currentDayProgressText; // Texto para mostrar a fração de dia passado
+    [SerializeField] private TextMeshProUGUI currentDayProgressText; // Texto para mostrar a fração de dia passado
+
+    [SerializeField] private TextMeshProUGUI currentTotalAnimals; // Texto para mostrar o número atual de animais
 
     [SerializeField] private float baseDayDuration = 10f;  // Duração base de um dia em segundos (10 segundos)
 
@@ -23,11 +25,11 @@ public class TimeController : MonoBehaviour
     private Simulation simulation;
 
 
-        AnimalSpawner animalSpawner;
+    AnimalSpawner animalSpawner = new AnimalSpawner();
 
     // Enum com todas as velocidades possíveis de tempo
     private enum Speed
-    { 
+    {
         Pause = 0,
         x1 = 1,
         x2 = 2,
@@ -35,19 +37,18 @@ public class TimeController : MonoBehaviour
         x10 = 10,
         x100 = 100,
 
-        x200=200
+        x200 = 200
     }
 
     [SerializeField] private Speed currentSpeed = Speed.x1;
     private float currentDayProgress = 0f;
     private int currentDay = 1;  // Começa no Dia 1
 
-    
 
     void Start()
     {
         Debug.Log("Hello World!");
-        
+
         // Configurações iniciais do slider
         if (timeSlider != null)
         {
@@ -57,8 +58,9 @@ public class TimeController : MonoBehaviour
 
         simulation = new Simulation(100, 10, new Backend.Animals.Animal1());
 
-        animalSpawner = new AnimalSpawner(new Backend.Animals.Animal1(), 100, new Vector3(0, 0, 0), new Vector3(1000, 1000, 10));
-        animalSpawner.SpawnAnimals();
+        currentTotalAnimals.SetText("Total Animals:" + simulation.getNumOfAnimals());
+
+        animalSpawner.SpawnAnimals(new Backend.Animals.Animal1(), simulation.getNumOfAnimals());
 
         UpdateTimeText();
         UpdateSpeedText();
@@ -70,14 +72,14 @@ public class TimeController : MonoBehaviour
         {
             float timeBetweenFrames = Time.deltaTime;
             // Avança o progresso do dia
-            currentDayProgress += (1/baseDayDuration)* timeBetweenFrames * (int)currentSpeed ;
+            currentDayProgress += (1 / baseDayDuration) * timeBetweenFrames * (int)currentSpeed;
 
             // Verifica se um dia foi completado
             if (currentDayProgress >= 1f)
             {
                 currentDayProgress = 0f;
                 // currentDay++;
-                advanceDay();
+                AdvanceDay();
             }
 
             // Atualiza o slider
@@ -138,13 +140,15 @@ public class TimeController : MonoBehaviour
 
     // Função para avançar um dia
 
-    private void advanceDay(){
-        UnityEngine.Debug.Log("On this these day there were "+simulation.getNumOfAnimals() + "animals!");
+    private void AdvanceDay()
+    {
         currentDay++;
         simulation.nextDay();
+        animalSpawner.SpawnAnimals(new Backend.Animals.Animal1(), simulation.getNumOfAnimals());
+        currentTotalAnimals.SetText("Total Animals:" + simulation.getNumOfAnimals());
     }
 
-    
+
 
     // Atualiza o texto do tempo
     private void UpdateTimeText()
@@ -162,9 +166,11 @@ public class TimeController : MonoBehaviour
 
     }
 
-    private void UpdateCurrentDayProgressText(){
-        if(currentDayProgressText!=null){
-            currentDayProgressText.text = "Current Day progress:"+currentDayProgress;
+    private void UpdateCurrentDayProgressText()
+    {
+        if (currentDayProgressText != null)
+        {
+            currentDayProgressText.text = "Current Day progress:" + currentDayProgress;
         }
 
     }
