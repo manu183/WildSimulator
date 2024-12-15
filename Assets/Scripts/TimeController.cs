@@ -24,6 +24,8 @@ public class TimeController : MonoBehaviour
 
     private Simulation simulation;
 
+    [SerializeField] private SunlightController sunlightController;
+
 
     AnimalSpawner animalSpawner = new AnimalSpawner();
 
@@ -56,7 +58,16 @@ public class TimeController : MonoBehaviour
             timeSlider.maxValue = 100f;  // Progresso do dia de 0 a 100 dias
         }
 
-        simulation = new Simulation(100, 10, new Backend.Animals.Animal1());
+        if (MenuController.Instance == null)
+        {
+            Debug.LogError("O MenuController não foi inicializado corretamente.");
+        }
+        else
+        {
+            // Acesse a instância do Singleton com segurança
+            // Exemplo: MenuController.Instance.Metodo();
+        }
+        // simulation = new Simulation(100, MenuController.anima);
 
         currentTotalAnimals.SetText("Total Animals:" + simulation.getNumOfAnimals());
 
@@ -73,6 +84,10 @@ public class TimeController : MonoBehaviour
             float timeBetweenFrames = Time.deltaTime;
             // Avança o progresso do dia
             currentDayProgress += (1 / baseDayDuration) * timeBetweenFrames * (int)currentSpeed;
+            
+            sunlightController.currentDayProgress = currentDayProgress;
+
+
 
             // Verifica se um dia foi completado
             if (currentDayProgress >= 1f)

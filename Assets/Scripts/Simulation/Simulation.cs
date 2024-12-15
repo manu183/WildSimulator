@@ -10,7 +10,7 @@
     {
         private static void Main(string[] args)
         {
-            new Simulation(100, 10, new Animal1());
+            // new Simulation(100, 10, new Animal1());
         }
     }
 
@@ -18,14 +18,19 @@
     {
         public static readonly Random random = new Random();
         readonly List<Individuo> population = new List<Individuo>();
-        readonly Specie specie;
-        public Simulation(int nrCycles, int popInit, Specie specie)
+        
+        public Simulation(int nrCycles, List<Specie> animals)
         {
-            this.specie = specie;
-            for (int i = 0; i < popInit; i++)
+            for (int i = 0; i < animals.Count; i++)
             {
-                population.Add(new Individuo(specie));
+                // population.Add(new Individuo(specie));
             }
+            foreach (Specie animal in animals)
+            {
+                // Console.WriteLine(individuo);
+                population.Add(new Individuo(animal));
+            }
+
             // for (int i = 0; i < nrCycles; i++)
             // {
             //     if (population.Count == 0)
@@ -61,35 +66,41 @@
                 }
                 else
                 {
-                    int numNovos = individuo.specie.GetNrOfKids();
+                    int numNovos = individuo.MakeChildren();
                     for (int j = 0; j < numNovos; j++)
                     {
                         /*                         Console.WriteLine("individuo nasceu");
                          */
-                        novos.Add(new Individuo(specie)); // Adiciona à lista de novos
+                        novos.Add(new Individuo(individuo.specie)); // Adiciona à lista de novos
                     }
                 }
             }
 
             // Remove os indivíduos mortos após o loop
             Console.WriteLine("Morreram neste dia: " + mortos.Count + " Nasceram: " + novos.Count);
+            UnityEngine.Debug.Log("Morreram neste dia: " + mortos.Count + " Nasceram: " + novos.Count);
             population.RemoveAll(x => x.died);
 
             // Adiciona os novos indivíduos após o loop
             population.AddRange(novos);
         }
 
+
         public void nextDay()
         {
             nextCycle(new Day());
         }
-    
-        public int getNumOfAnimals(){
+
+        public int getNumOfAnimals()
+        {
             return population.Count;
         }
-    }
 
+
+    }
 }
+
+
 
 
 

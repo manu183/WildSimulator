@@ -36,6 +36,23 @@ namespace Backend
             // TO DO USING V.A. OF DISASTER GRAPH 
         }
 
+        public double getProbMorrerDesastre()
+        {
+            if (disasterType == 1)
+            {
+                return 0;
+            }
+            if (disasterType == 2)
+            {
+                return 0.15;
+            }
+            if (disasterType == 3)
+            {
+                return 0.30;
+            }
+            return 0.85;
+        }
+
         private static readonly double[] avrTemp = { 0, 4, 9.5, 14, 17.5, 20, 21.5, 22, 21.5, 20, 17.5, 14, 9.5 };
         private double SetTemperature()
         {
@@ -45,7 +62,7 @@ namespace Backend
 
         private double getAvrTemp()
         {
-            DateTime dataInicial = new DateTime(1, 5, 1); //Começa em maio
+            DateTime dataInicial = new DateTime(1, 5, 1);
             DateTime dataFinal = dataInicial.AddDays(nrDay);
             return avrTemp[dataFinal.Month];
         }

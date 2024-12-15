@@ -28,13 +28,17 @@ namespace Backend
             {
                 double r = Simulation.random.NextDouble();
                 if (r < specie.probProcriar)
+                {
+                    //Console.WriteLine("FICOU GRAVIDO");
                     pregnant++;
+                }
             }
             else if (pregnant == specie.tempoGravidez)
             {
                 pregnant = 0;
                 return specie.GetNrOfKids();
             }
+            else { pregnant++; }
             return 0;
         }
         public Boolean Dies(Day day)
@@ -55,6 +59,12 @@ namespace Backend
                 died = true;
                 /* Console.WriteLine("PROBABILIDADE SOBREVIVER: " + ProbabilidadeSobreviver(day.temperature));
                 Console.WriteLine("MORREU TEMPERATURA"); */
+                return true;
+            }
+            r = Simulation.random.NextDouble();
+            if (r < day.getProbMorrerDesastre())
+            {
+                died = true;
                 return true;
             }
             // fazer morrer desastre natural
