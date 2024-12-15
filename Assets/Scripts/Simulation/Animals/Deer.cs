@@ -4,7 +4,7 @@ namespace Backend.Animals
 {
     public class Deer : Specie
     {
-        public Deer() : base(25, 0.5, 2) // Initialize with IdealTemperature,oddOfPregnant
+        public Deer() : base(14, 0.5, 2, 60, 17 ) // Initialize with IdealTemperature,oddOfPregnant
         {
         }
 
@@ -22,15 +22,7 @@ namespace Backend.Animals
                 return 4;
         }
 
-        public override int GetMaxAge()
-        {
-            return (int)Math.Round(Distributions.BimodalTruncated(0, 5, 0.1, 17, 20, 0.9));
-        }
-
-        public override double GetDesvioTemp()
-        {
-            return Distributions.Normal(13, 10);
-        }
+       
     }
 
 

@@ -14,44 +14,40 @@ namespace Utils
             spawnedAnimals = new List<Object>();
         }
 
+        public void SpawnAnimal(Specie animal)
+        {   
 
+            SpawnAnimals(animal,1);
+            
+        }
 
-        public void SpawnAnimals(Specie animal, int numberOfAnimals)
-        {
-            if (spawnedAnimals.Count >= 1)
-            {
-                ClearAnimals();
-            }
+        private void SpawnAnimals(Specie animal, int numberOfAnimals)
+        {   
 
             GameObject animalPrefab = null;
-            if (animal is Backend.Animals.Animal1)
+
+            
+            if (animal is Backend.Animals.Chicken)
             {
-                GameObject tigerPrefab = Resources.Load<GameObject>("Animals_FREE/Prefabs/Tiger_001");
-
-                if (tigerPrefab != null)
-                {
-                    Debug.Log("Tiger prefab carregado com sucesso!");
-                }
-                else
-                {
-                    Debug.LogError("Falha ao carregar o prefab Tiger_001. Verifique o caminho e se ele está na pasta Resources.");
-                }
-
-
-
-
-                animalPrefab = tigerPrefab;
+                animalPrefab = Resources.Load<GameObject>("Animals_FREE/Prefabs/Chicken_001");
+            }else if(animal is Backend.Animals.Deer){
+                 animalPrefab = Resources.Load<GameObject>("Animals_FREE/Prefabs/Deer_001");
+            }else if(animal is Backend.Animals.Dog){
+                 animalPrefab = Resources.Load<GameObject>("Animals_FREE/Prefabs/Dog_001");
+            }else if(animal is Backend.Animals.Horse){
+                 animalPrefab = Resources.Load<GameObject>("Animals_FREE/Prefabs/Horse_001");
+            }else if(animal is Backend.Animals.Kitty){
+                 animalPrefab = Resources.Load<GameObject>("Animals_FREE/Prefabs/Kitty_001");
+            }else if(animal is Backend.Animals.Pinguin){
+                 animalPrefab = Resources.Load<GameObject>("Animals_FREE/Prefabs/Pinguin_001");
+            }else if(animal is Backend.Animals.Tiger){
+                 animalPrefab = Resources.Load<GameObject>("Animals_FREE/Prefabs/Tiger_001");
             }
+
 
             if (animalPrefab == null)
             {
-                Debug.LogError("Prefab não encontrado para a espécie fornecida!");
-                return;
-            }
-
-            if (animalPrefab == null)
-            {
-                Debug.LogError("Não carrega o GameObject!");
+                Debug.LogError("Não carrega o GameObject" + animal.GetType()+"!");
             }
             else
             {
@@ -93,7 +89,7 @@ namespace Utils
             Debug.Log("There are " + spawnedAnimals.Count + " animals on the field!");
         }
 
-        private void ClearAnimals()
+        public void ClearAnimals()
         {
             if (spawnedAnimals != null)
             {

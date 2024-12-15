@@ -5,29 +5,47 @@ using System;
 using Backend;
 using Backend.Animals;
 using Utils;
+using System.Collections.Generic;
+using UnityEngine.UIElements;
+using Slider = UnityEngine.UI.Slider;
+using System.Threading;
 
 public class TimeController : MonoBehaviour
 {
     [SerializeField] private Slider timeSlider;         // Referência ao Slider
-    [SerializeField] private TextMeshProUGUI timeText;  // Referência ao texto do tempo
     [SerializeField] private TextMeshProUGUI toggleButtonText; // Referência ao texto do botão
-    [SerializeField] private TextMeshProUGUI speedText; // Texto para mostrar a velocidade atual
-
-    [SerializeField] private TextMeshProUGUI currentDayProgressText; // Texto para mostrar a fração de dia passado
-
-    [SerializeField] private TextMeshProUGUI currentTotalAnimals; // Texto para mostrar o número atual de animais
 
     [SerializeField] private float baseDayDuration = 10f;  // Duração base de um dia em segundos (10 segundos)
 
 
-    private DayOfWeek[] simulationDays;
+
+    //Dados estatística em tempo real
+
+    [SerializeField] private TextMeshProUGUI currentDayProgressText; // Texto para mostrar a fração de dia passado
+
+    [SerializeField] private TextMeshProUGUI currentTotalAnimals; // Texto para mostrar o número atual de animais
+    [SerializeField] private TextMeshProUGUI timeText;  // Referência ao texto do tempo
+    [SerializeField] private TextMeshProUGUI speedText; // Texto para mostrar a velocidade atual
+
+    [SerializeField] private TextMeshProUGUI desastreNatural; // Texto para mostrar a fração de dia passado
+
+
+    [SerializeField] private TextMeshProUGUI dayTemperature; // Texto para mostrar a fração de dia passado
+    [SerializeField] private TextMeshProUGUI chickenPopulation; // Texto para mostrar a fração de dia passado
+    [SerializeField] private TextMeshProUGUI deerPopulation; // Texto para mostrar a fração de dia passado
+    [SerializeField] private TextMeshProUGUI dogPopulation; // Texto para mostrar a fração de dia passado
+    [SerializeField] private TextMeshProUGUI horsePopulation; // Texto para mostrar a fração de dia passado
+    [SerializeField] private TextMeshProUGUI kittyPopulation; // Texto para mostrar a fração de dia passado
+    [SerializeField] private TextMeshProUGUI pinguinPopulation; // Texto para mostrar a fração de dia passado
+    [SerializeField] private TextMeshProUGUI tigerPopulation; // Texto para mostrar a fração de dia passado
+
+
 
     private Simulation simulation;
 
     [SerializeField] private SunlightController sunlightController;
 
 
-    AnimalSpawner animalSpawner = new AnimalSpawner();
 
     // Enum com todas as velocidades possíveis de tempo
     private enum Speed
@@ -38,13 +56,16 @@ public class TimeController : MonoBehaviour
         x5 = 5,
         x10 = 10,
         x100 = 100,
+        x200 = 200,
 
-        x200 = 200
+        x1000 =1000
     }
 
     [SerializeField] private Speed currentSpeed = Speed.x1;
     private float currentDayProgress = 0f;
     private int currentDay = 1;  // Começa no Dia 1
+
+    private static readonly int MAX_DAYS =100;
 
 
     void Start()
@@ -55,26 +76,22 @@ public class TimeController : MonoBehaviour
         if (timeSlider != null)
         {
             timeSlider.minValue = 0f;
-            timeSlider.maxValue = 100f;  // Progresso do dia de 0 a 100 dias
+            timeSlider.maxValue = MAX_DAYS;  // Progresso do dia de 0 a 100 dias
         }
+      
 
-        if (MenuController.Instance == null)
-        {
-            Debug.LogError("O MenuController não foi inicializado corretamente.");
-        }
-        else
-        {
-            // Acesse a instância do Singleton com segurança
-            // Exemplo: MenuController.Instance.Metodo();
-        }
-        // simulation = new Simulation(100, MenuController.anima);
+        List<Specie> animals =  AnimalManager.Instance.GetAnimals();
+        Debug.Log("AnimalManager has "+animals.Count+ " animals!");
+        Debug.Log("Animal Manager não está nulo!");
+        simulation = new Simulation(MAX_DAYS, animals);
 
-        currentTotalAnimals.SetText("Total Animals:" + simulation.getNumOfAnimals());
-
-        animalSpawner.SpawnAnimals(new Backend.Animals.Animal1(), simulation.getNumOfAnimals());
+        
 
         UpdateTimeText();
         UpdateSpeedText();
+
+        simulation.NextDay(); //Calcular o primeiro dia
+        UpdateAllStats(); //Atualiza as estatísticas do ecrã
     }
 
     void Update() //É chamada a cada frame
@@ -95,6 +112,7 @@ public class TimeController : MonoBehaviour
                 currentDayProgress = 0f;
                 // currentDay++;
                 AdvanceDay();
+                
             }
 
             // Atualiza o slider
@@ -111,7 +129,7 @@ public class TimeController : MonoBehaviour
     {
         // Navega pelas velocidades, excluindo Pause
         int currentSpeedIndex = (int)currentSpeed;
-        int maxSpeedIndex = Enum.GetValues(typeof(Speed)).Length - 1;
+        int maxSpeedIndex = Enum.GetValues(typeof(Speed)).Length-1;
 
         if (currentSpeedIndex < maxSpeedIndex)
         {
@@ -136,9 +154,11 @@ public class TimeController : MonoBehaviour
     // Atualiza o texto de velocidade
     private void UpdateSpeedText()
     {
+        string[] velocity = Enum.GetNames(typeof(Speed));
+        int currentSpeedIndex = (int)currentSpeed;
         if (speedText != null)
         {
-            speedText.text = currentSpeed == Speed.Pause ? "Pause" : $"{(int)currentSpeed}x";
+            speedText.text = currentSpeed == Speed.Pause ? "Pause" : velocity[currentSpeedIndex];
         }
     }
 
@@ -156,11 +176,16 @@ public class TimeController : MonoBehaviour
     // Função para avançar um dia
 
     private void AdvanceDay()
-    {
-        currentDay++;
-        simulation.nextDay();
-        animalSpawner.SpawnAnimals(new Backend.Animals.Animal1(), simulation.getNumOfAnimals());
-        currentTotalAnimals.SetText("Total Animals:" + simulation.getNumOfAnimals());
+    {   
+        if(currentDay+1<=MAX_DAYS){
+            currentDay++;
+            simulation.NextDay();
+            UpdateAllStats(); // As estatísticas são atualizadas a cada dia, com exceção da hora e currentDay progress
+        }else{
+            Debug.Log("Acabaram os dias!");
+            currentSpeed = Speed.Pause;
+        }
+
     }
 
 
@@ -185,8 +210,46 @@ public class TimeController : MonoBehaviour
     {
         if (currentDayProgressText != null)
         {
-            currentDayProgressText.text = "Current Day progress:" + currentDayProgress;
+            currentDayProgressText.text = "Day progress:" + (currentDayProgress*100).ToString("F2") + "%";
         }
+
+    }
+
+    private string GetDisasterName() {
+    int disasterType = simulation.GetDisaster();
+
+    switch (disasterType) {
+        case 1:
+            return "None";
+        case 2:
+            return "Fire";
+        case 3:
+            return "Earthquake";
+        case 4:
+            return "Tsunami";
+        default:
+            return "Unknown"; // Para o caso de um desastre não mapeado
+    }
+}
+
+
+
+
+    private void UpdateAllStats(){
+
+        dayTemperature.SetText("Temperature:" + simulation.GetTemperature().ToString("F2") + "ºC");
+        desastreNatural.SetText("Disaster:"+GetDisasterName());
+
+
+        currentTotalAnimals.SetText("Total Animals:" + simulation.GetTotalPopulation());
+        chickenPopulation.SetText("Population:" + simulation.GetPopulation(new Chicken()));
+        deerPopulation.SetText("Population:" + simulation.GetPopulation(new Deer()));
+        dogPopulation.SetText("Population:" + simulation.GetPopulation(new Dog()));
+        horsePopulation.SetText("Population:" + simulation.GetPopulation(new Horse()));
+        kittyPopulation.SetText("Population:" + simulation.GetPopulation(new Kitty()));
+        pinguinPopulation.SetText("Population:" + simulation.GetPopulation(new Pinguin()));
+        tigerPopulation.SetText("Population:" + simulation.GetPopulation(new Tiger()));
+
 
     }
 
